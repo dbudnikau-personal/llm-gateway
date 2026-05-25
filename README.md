@@ -56,7 +56,7 @@ All configuration is in `src/main/resources/application.properties`. Secrets are
 | `anthropic.version` | — | `2023-06-01` | Anthropic API version header |
 | `anthropic.max-tokens` | — | `8096` | Default `max_tokens` when not set by the client |
 | `gateway.routing.complexity-threshold` | — | `500` | Prompt char length threshold for routing to Claude |
-| `gateway.auth.token` | — | _(empty)_ | Bearer token to protect the gateway — leave empty to disable (warning logged on startup) |
+| `gateway.auth.token` | `GATEWAY_AUTH_TOKEN` | _(empty)_ | Bearer token to protect the gateway — leave empty to disable (warning logged on startup) |
 
 ## Running
 
