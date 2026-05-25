@@ -21,3 +21,6 @@ jobs:
 
       - name: Build and test
         run: mvn --batch-mode verify
+
+      - name: Build Docker image
+        run: docker build -t llm-gateway:${{ github.sha }} .
