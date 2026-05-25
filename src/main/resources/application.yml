@@ -1,0 +1,32 @@
+ollama:
+  base-url: http://localhost:11434
+  model:
+    default: qwen2.5-coder:7b-instruct-q4_K_M
+
+anthropic:
+  base-url: https://api.anthropic.com
+  model: claude-sonnet-4-6
+  api-key: ${ANTHROPIC_API_KEY:}
+  version: 2023-06-01
+  max-tokens: 8096
+
+gateway:
+  auth:
+    token: ${GATEWAY_AUTH_TOKEN:}
+  routing:
+    complexity-threshold: 500
+  model:
+    aliases:
+      coder: qwen2.5-coder:7b-instruct-q4_K_M
+      "gemma4:31b-cloud": qwen2.5-coder:7b-instruct-q4_K_M
+
+# Reject requests larger than 1 MB to prevent OOM
+spring:
+  servlet:
+    multipart:
+      max-request-size: 1MB
+  tomcat:
+    max-http-form-post-size: 1MB
+server:
+  tomcat:
+    max-http-form-post-size: 1MB
