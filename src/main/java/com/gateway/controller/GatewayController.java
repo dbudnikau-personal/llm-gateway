@@ -1,14 +1,8 @@
 package com.gateway.controller;
 
-import com.gateway.client.AnthropicClient;
-import com.gateway.client.OllamaClient;
-import com.gateway.dto.AnthropicResponse;
-import com.gateway.model.AssistantResponse;
-import com.gateway.service.ComplexityAnalyzer;
-import com.gateway.service.LocalModelResolver;
 import com.gateway.service.MessageExtractor;
+import com.gateway.service.RoutingService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
 public class GatewayController {
 
-    private final OllamaClient ollamaClient;
-    private final AnthropicClient anthropicClient;
-    private final LocalModelResolver localModelResolver;
+    private final RoutingService routingService;
     private final MessageExtractor messageExtractor;
-    private final ComplexityAnalyzer complexityAnalyzer;
 
     @Value("${gateway.auth.token:}")
     private String authToken;
@@ -51,7 +41,7 @@ public class GatewayController {
 
         List<?> rawMessages = req.get("messages") instanceof List<?> l ? l : null;
         if (rawMessages == null || rawMessages.isEmpty()) {
-            return ResponseEntity.ok(new AssistantResponse(localModelResolver.resolve(null), "empty messages"));
+            return ResponseEntity.ok(routingService.route(req, ""));
         }
 
         List<Map<String, Object>> messages = rawMessages.stream()
@@ -60,17 +50,6 @@ public class GatewayController {
                 .toList();
 
         String prompt = messageExtractor.extractUserText(messages);
-
-        if (anthropicClient.isEnabled() && complexityAnalyzer.isComplex(prompt)) {
-            log.info("routing=claude prompt_len={}", prompt.length());
-            AnthropicResponse response = anthropicClient.ask(req);
-            return ResponseEntity.ok(response);
-        }
-
-        String model = localModelResolver.resolve((String) req.get("model"));
-        log.info("routing=local model={} prompt_len={}", model, prompt.length());
-
-        String answer = ollamaClient.ask(model, prompt);
-        return ResponseEntity.ok(new AssistantResponse(model, answer == null ? "" : answer));
+        return ResponseEntity.ok(routingService.route(req, prompt));
     }
 }

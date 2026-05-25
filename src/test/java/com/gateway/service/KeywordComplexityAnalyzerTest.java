@@ -6,9 +6,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ComplexityAnalyzerTest {
+class KeywordComplexityAnalyzerTest {
 
-    private final ComplexityAnalyzer analyzer = new ComplexityAnalyzer(500);
+    private final ComplexityAnalyzer analyzer = new KeywordComplexityAnalyzer(500);
 
     @Test
     void shortSimplePrompt_isNotComplex() {

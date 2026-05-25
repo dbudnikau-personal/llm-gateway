@@ -3,6 +3,7 @@ package com.gateway.client;
 import com.gateway.dto.OllamaGenerateRequest;
 import com.gateway.dto.OllamaGenerateResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -15,6 +16,7 @@ public class OllamaClient {
 
     private final RestClient client;
 
+    @Autowired
     public OllamaClient(@Value("${ollama.base-url}") String baseUrl) {
         this(RestClient.builder()
                 .requestFactory(new SimpleClientHttpRequestFactory())

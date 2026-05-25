@@ -1,6 +1,6 @@
 package com.gateway.client;
 
-import com.gateway.dto.AnthropicResponse;
+import com.gateway.model.AssistantResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -41,7 +41,7 @@ public class AnthropicClient {
         return enabled;
     }
 
-    public AnthropicResponse ask(Map<String, Object> originalReq) {
+    public AssistantResponse ask(Map<String, Object> originalReq) {
         Map<String, Object> body = new HashMap<>();
         ALLOWED_FIELDS.forEach(field -> {
             if (originalReq.containsKey(field)) {
@@ -58,6 +58,6 @@ public class AnthropicClient {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(body)
                 .retrieve()
-                .body(AnthropicResponse.class);
+                .body(AssistantResponse.class);
     }
 }
