@@ -22,18 +22,22 @@ public class AnthropicClient {
 
     private final RestClient client;
     private final String model;
+    private final int defaultMaxTokens;
     private final boolean enabled;
 
     public AnthropicClient(
             @Value("${anthropic.base-url}") String baseUrl,
             @Value("${anthropic.model}") String model,
-            @Value("${anthropic.api-key:}") String apiKey) {
+            @Value("${anthropic.api-key:}") String apiKey,
+            @Value("${anthropic.version}") String version,
+            @Value("${anthropic.max-tokens}") int defaultMaxTokens) {
         this.model = model;
+        this.defaultMaxTokens = defaultMaxTokens;
         this.enabled = !apiKey.isBlank();
         this.client = RestClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader("x-api-key", apiKey)
-                .defaultHeader("anthropic-version", "2023-06-01")
+                .defaultHeader("anthropic-version", version)
                 .build();
     }
 
@@ -49,7 +53,7 @@ public class AnthropicClient {
             }
         });
         body.put("model", model);
-        body.putIfAbsent("max_tokens", 8096);
+        body.putIfAbsent("max_tokens", defaultMaxTokens);
 
         log.debug("forwarding to Anthropic model={}", model);
 

@@ -53,8 +53,10 @@ All configuration is in `src/main/resources/application.properties`. Secrets are
 | `ollama.model.default` | — | `qwen2.5-coder:7b-instruct-q4_K_M` | Local model |
 | `anthropic.api-key` | `ANTHROPIC_API_KEY` | _(empty)_ | Anthropic API key — if not set, all traffic goes local |
 | `anthropic.model` | — | `claude-sonnet-4-6` | Claude model for complex requests |
+| `anthropic.version` | — | `2023-06-01` | Anthropic API version header |
+| `anthropic.max-tokens` | — | `8096` | Default `max_tokens` when not set by the client |
 | `gateway.routing.complexity-threshold` | — | `500` | Prompt char length threshold for routing to Claude |
-| `gateway.auth.token` | — | _(empty)_ | Bearer token to protect the gateway — leave empty to disable |
+| `gateway.auth.token` | — | _(empty)_ | Bearer token to protect the gateway — leave empty to disable (warning logged on startup) |
 
 ## Running
 

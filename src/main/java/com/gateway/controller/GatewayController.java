@@ -2,7 +2,9 @@ package com.gateway.controller;
 
 import com.gateway.service.MessageExtractor;
 import com.gateway.service.RoutingService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
@@ -25,6 +28,15 @@ public class GatewayController {
 
     @Value("${gateway.auth.token:}")
     private String authToken;
+
+    @PostConstruct
+    void logSecurityState() {
+        if (authToken.isBlank()) {
+            log.warn("gateway.auth.token is not set — the gateway accepts requests from anyone");
+        } else {
+            log.info("gateway auth enabled");
+        }
+    }
 
     @SuppressWarnings("unchecked")
     @PostMapping("/messages")
