@@ -5,6 +5,7 @@ target/
 .idea/
 *.iml
 .DS_Store
+.claude/
 application-local.properties
 application-local.yml
 *.env
