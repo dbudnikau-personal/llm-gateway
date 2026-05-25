@@ -2,6 +2,7 @@ package com.gateway.controller;
 
 import com.gateway.client.AnthropicClient;
 import com.gateway.client.OllamaClient;
+import com.gateway.dto.AnthropicResponse;
 import com.gateway.model.AssistantResponse;
 import com.gateway.service.ComplexityAnalyzer;
 import com.gateway.service.LocalModelResolver;
@@ -62,7 +63,7 @@ public class GatewayController {
 
         if (anthropicClient.isEnabled() && complexityAnalyzer.isComplex(prompt)) {
             log.info("routing=claude prompt_len={}", prompt.length());
-            Map<String, Object> response = anthropicClient.ask(req);
+            AnthropicResponse response = anthropicClient.ask(req);
             return ResponseEntity.ok(response);
         }
 

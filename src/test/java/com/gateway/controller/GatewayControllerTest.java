@@ -2,6 +2,7 @@ package com.gateway.controller;
 
 import com.gateway.client.AnthropicClient;
 import com.gateway.client.OllamaClient;
+import com.gateway.dto.AnthropicResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,10 +11,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Map;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -55,11 +55,13 @@ class GatewayControllerTest {
     @Test
     void complexPrompt_routedToAnthropic() throws Exception {
         when(anthropicClient.isEnabled()).thenReturn(true);
-        when(anthropicClient.ask(any())).thenReturn(Map.of(
-                "id", "msg_abc", "type", "message", "role", "assistant",
-                "content", java.util.List.of(Map.of("type", "text", "text", "deep answer")),
-                "stop_reason", "end_turn"
-        ));
+        AnthropicResponse mockResponse = new AnthropicResponse(
+                "msg_abc", "message", "assistant", "claude-sonnet-4-6",
+                List.of(new AnthropicResponse.ContentBlock("text", "deep answer")),
+                "end_turn", null,
+                new AnthropicResponse.Usage(10, 20)
+        );
+        when(anthropicClient.ask(any())).thenReturn(mockResponse);
 
         mvc.perform(post("/v1/messages")
                         .contentType(MediaType.APPLICATION_JSON)
