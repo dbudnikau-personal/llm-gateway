@@ -1,7 +1,7 @@
 package com.gateway.controller;
 
-import com.gateway.client.AnthropicClient;
-import com.gateway.client.OllamaClient;
+import com.gateway.model.AssistantResponse;
+import com.gateway.service.RoutingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,6 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,15 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties = "gateway.auth.token=secret-token")
 class GatewayControllerAuthTest {
 
-    @MockBean OllamaClient ollamaClient;
-    @MockBean AnthropicClient anthropicClient;
+    @MockBean RoutingService routingService;
 
     @Autowired MockMvc mvc;
 
     @Test
     void correctToken_allowsRequest() throws Exception {
-        when(anthropicClient.isEnabled()).thenReturn(false);
-        when(ollamaClient.ask(any(), any())).thenReturn("ok");
+        when(routingService.route(any(), anyString())).thenReturn(new AssistantResponse("m", "ok"));
 
         mvc.perform(post("/v1/messages")
                         .contentType(MediaType.APPLICATION_JSON)

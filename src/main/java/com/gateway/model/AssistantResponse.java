@@ -1,5 +1,6 @@
 package com.gateway.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record AssistantResponse(
         String id,
         String type,
@@ -30,8 +32,10 @@ public record AssistantResponse(
         );
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record Content(String type, String text) {}
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record Usage(
             @JsonProperty("input_tokens") int inputTokens,
             @JsonProperty("output_tokens") int outputTokens
