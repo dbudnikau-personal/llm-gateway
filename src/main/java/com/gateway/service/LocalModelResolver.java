@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
-public class ModelRouter {
+public class LocalModelResolver {
 
     private static final Map<String, String> ALIASES = Map.of(
             "gemma4:31b-cloud", "qwen2.5-coder:7b-instruct-q4_K_M",
@@ -15,7 +15,7 @@ public class ModelRouter {
 
     private final String defaultModel;
 
-    public ModelRouter(@Value("${ollama.model.default}") String defaultModel) {
+    public LocalModelResolver(@Value("${ollama.model.default}") String defaultModel) {
         this.defaultModel = defaultModel;
     }
 

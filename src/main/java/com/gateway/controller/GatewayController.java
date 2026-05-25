@@ -4,19 +4,21 @@ import com.gateway.client.AnthropicClient;
 import com.gateway.client.OllamaClient;
 import com.gateway.model.AssistantResponse;
 import com.gateway.service.ComplexityAnalyzer;
+import com.gateway.service.LocalModelResolver;
 import com.gateway.service.MessageExtractor;
-import com.gateway.service.ModelRouter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -26,7 +28,7 @@ public class GatewayController {
 
     private final OllamaClient ollamaClient;
     private final AnthropicClient anthropicClient;
-    private final ModelRouter modelRouter;
+    private final LocalModelResolver localModelResolver;
     private final MessageExtractor messageExtractor;
     private final ComplexityAnalyzer complexityAnalyzer;
 
@@ -48,7 +50,7 @@ public class GatewayController {
 
         List<?> rawMessages = req.get("messages") instanceof List<?> l ? l : null;
         if (rawMessages == null || rawMessages.isEmpty()) {
-            return ResponseEntity.ok(new AssistantResponse("empty messages"));
+            return ResponseEntity.ok(new AssistantResponse(localModelResolver.resolve(null), "empty messages"));
         }
 
         List<Map<String, Object>> messages = rawMessages.stream()
@@ -64,30 +66,10 @@ public class GatewayController {
             return ResponseEntity.ok(response);
         }
 
-        String model = modelRouter.resolve((String) req.get("model"));
+        String model = localModelResolver.resolve((String) req.get("model"));
         log.info("routing=local model={} prompt_len={}", model, prompt.length());
 
         String answer = ollamaClient.ask(model, prompt);
-        String safeAnswer = answer == null ? "" : answer;
-
-        Map<String, Object> text = new HashMap<>();
-        text.put("type", "text");
-        text.put("text", safeAnswer);
-
-        Map<String, Object> usage = new HashMap<>();
-        usage.put("input_tokens", 0);
-        usage.put("output_tokens", 0);
-
-        Map<String, Object> msg = new HashMap<>();
-        msg.put("id", "msg_" + UUID.randomUUID().toString().replace("-", ""));
-        msg.put("type", "message");
-        msg.put("role", "assistant");
-        msg.put("model", model);
-        msg.put("content", List.of(text));
-        msg.put("stop_reason", "end_turn");
-        msg.put("stop_sequence", null);
-        msg.put("usage", usage);
-
-        return ResponseEntity.ok(msg);
+        return ResponseEntity.ok(new AssistantResponse(model, answer == null ? "" : answer));
     }
 }

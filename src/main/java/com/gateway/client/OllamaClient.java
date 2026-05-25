@@ -1,12 +1,13 @@
 package com.gateway.client;
 
+import com.gateway.dto.OllamaGenerateRequest;
+import com.gateway.dto.OllamaGenerateResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -15,30 +16,31 @@ public class OllamaClient {
     private final RestClient client;
 
     public OllamaClient(@Value("${ollama.base-url}") String baseUrl) {
-        this.client = RestClient.builder()
+        this(RestClient.builder()
+                .requestFactory(new SimpleClientHttpRequestFactory())
                 .baseUrl(baseUrl)
-                .build();
+                .build());
+    }
+
+    OllamaClient(RestClient client) {
+        this.client = client;
     }
 
     public String ask(String model, String prompt) {
-        Map<String, Object> body = Map.of(
-                "model", model,
-                "prompt", prompt,
-                "stream", false
-        );
+        OllamaGenerateRequest body = new OllamaGenerateRequest(model, prompt, false);
 
-        Map resp = client.post()
+        OllamaGenerateResponse resp = client.post()
                 .uri("/api/generate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(body)
                 .retrieve()
-                .body(Map.class);
+                .body(OllamaGenerateResponse.class);
 
         if (resp == null) {
             log.warn("Empty response from Ollama for model={}", model);
             return null;
         }
 
-        return (String) resp.get("response");
+        return resp.response();
     }
 }
