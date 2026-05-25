@@ -1,5 +1,7 @@
 # llm-gateway
 
+[![Build & Test](https://github.com/dbudnikau-personal/llm-gateway/actions/workflows/build.yml/badge.svg)](https://github.com/dbudnikau-personal/llm-gateway/actions/workflows/build.yml)
+
 A lightweight Anthropic-compatible API gateway that routes requests between a local LLM (via Ollama) and the real Anthropic API based on prompt complexity. Simple requests stay local — saving tokens and cost. Complex requests are forwarded to Claude.
 
 ## How it works
