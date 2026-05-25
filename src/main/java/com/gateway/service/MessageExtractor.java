@@ -20,10 +20,9 @@ public class MessageExtractor {
             if (contentObj instanceof List<?> list) {
                 for (Object item : list) {
                     if (item instanceof Map<?, ?> map) {
-                        String type = (String) map.get("type");
-                        String text = (String) map.get("text");
-                        if ("text".equals(type) && text != null) {
-                            sb.append(text).append("\n");
+                        Object text = map.get("text");
+                        if ("text".equals(map.get("type")) && text instanceof String s) {
+                            sb.append(s).append("\n");
                         }
                     }
                 }

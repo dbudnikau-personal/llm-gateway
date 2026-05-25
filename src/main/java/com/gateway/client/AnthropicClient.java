@@ -1,5 +1,6 @@
 package com.gateway.client;
 
+import com.gateway.dto.AnthropicResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -40,11 +41,12 @@ public class AnthropicClient {
         return enabled;
     }
 
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> ask(Map<String, Object> originalReq) {
+    public AnthropicResponse ask(Map<String, Object> originalReq) {
         Map<String, Object> body = new HashMap<>();
         ALLOWED_FIELDS.forEach(field -> {
-            if (originalReq.containsKey(field)) body.put(field, originalReq.get(field));
+            if (originalReq.containsKey(field)) {
+                body.put(field, originalReq.get(field));
+            }
         });
         body.put("model", model);
         body.putIfAbsent("max_tokens", 8096);
@@ -56,6 +58,6 @@ public class AnthropicClient {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(body)
                 .retrieve()
-                .body(Map.class);
+                .body(AnthropicResponse.class);
     }
 }

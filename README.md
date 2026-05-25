@@ -94,4 +94,4 @@ The gateway maps friendly model names to local Ollama models:
 
 ## Status
 
-Early-stage personal tool. No tests yet. Breaking changes possible.
+Early-stage personal tool. Breaking changes possible.
