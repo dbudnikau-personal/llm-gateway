@@ -5,7 +5,10 @@ target/
 .idea/
 *.iml
 .DS_Store
+
+# Private AI context (Claude) — backed up out-of-band via claude-kb, never committed
 .claude/
+CLAUDE.md
 application-local.properties
 application-local.yml
 *.env
